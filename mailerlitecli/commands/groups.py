@@ -113,3 +113,29 @@ class Group(object):
             _delete_group = requests.delete("https://api.mailerlite.com/api/v2/groups/"+str(group_id), headers=headers)
 
         print("Deleted group {0} with ID {1}".format(group_name, group_id))
+
+    def show(self, group_id="", group_name=""):
+        mailerlite_api_token = self.mailerlite_api_token
+        response_table = PrettyTable()
+        response_table.field_names = ['Key', 'Value']
+        if group_id == "":
+            group_id = str(getGroupIDByName(mailerlite_api_token, group_name))
+            _show_group_info = requests.get("https://api.mailerlite.com/api/v2/groups/"+group_id, headers={'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}).json()
+        elif group_id != "":
+            _show_group_info = requests.get("https://api.mailerlite.com/api/v2/groups/"+str(group_id), headers={'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}).json()
+
+        response_table.add_row(['Name', '{}'.format(_show_group_info['name'])])
+        response_table.add_row(['ID', '{}'.format(_show_group_info['id'])])
+        response_table.add_row(['Total people in group', '{}'.format(_show_group_info['total'])])
+        response_table.add_row(['Total active', '{}'.format(_show_group_info['active'])])
+        response_table.add_row(['Total bounced', '{}'.format(_show_group_info['bounced'])])
+        response_table.add_row(['Total unconfirmed', '{}'.format(_show_group_info['unconfirmed'])])
+        response_table.add_row(['Total junk', '{}'.format(_show_group_info['junk'])])
+        response_table.add_row(['Total sent', '{}'.format(_show_group_info['sent'])])
+        response_table.add_row(['Total opened', '{}'.format(_show_group_info['opened'])])
+        response_table.add_row(['Total clicked', '{}'.format(_show_group_info['clicked'])])
+        response_table.add_row(['Date created', '{}'.format(_show_group_info['date_created'])])
+        response_table.add_row(['Data updated', '{}'.format(_show_group_info['date_updated'])])
+
+        print(response_table)
+
