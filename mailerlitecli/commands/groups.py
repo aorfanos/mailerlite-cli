@@ -60,10 +60,21 @@ def getGroupNameByID(mailerlite_api_token, group_id):
     for _group in _group_list:
         if _group['id'] == group_id:
             _group_name = _group['name']
-            print("Group ID {0} corresponds to name: {1}".format(group_id, _group_name))
+            return("Group ID {0} corresponds to name: {1}".format(group_id, _group_name))
             break
         else:
-            print("No records found for ID: {}".format(group_id))
+            return("No records found for ID: {}".format(group_id))
+            break
+
+def getGroupIDByName(mailerlite_api_token, group_name):
+    _group_list = requests.get("https://api.mailerlite.com/api/v2/groups", headers={'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}).json()
+    for _group in _group_list:
+        if _group['name'] == group_name:
+            _group_id = _group['id']
+            return("Group name {0} corresponds to ID: {1}".format(group_name, _group_id))
+            break
+        else:
+            return("No records found for name: {0}".format(group_name))
             break
     
         
