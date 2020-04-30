@@ -99,3 +99,17 @@ class Group(object):
 
         return("[{0}] Updated group ID {1} with key/value {2}/{3}".format(_update_group_parameter.status_code, 
             group_id, parameter_key, parameter_value  ))
+
+    def delete(self, group_id="", group_name=""):
+        mailerlite_api_token = self.mailerlite_api_token
+        headers = {
+                'Content-Type': 'application/json',
+                'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token),
+                }
+        if group_id == "":
+            group_id = str(getGroupIDByName(mailerlite_api_token, group_name))
+            _delete_group = requests.delete("https://api.mailerlite.com/api/v2/groups/"+group_id, headers=headers)
+        elif group_id != "":
+            _delete_group = requests.delete("https://api.mailerlite.com/api/v2/groups/"+str(group_id), headers=headers)
+
+        print("Deleted group {0} with ID {1}".format(group_name, group_id))
