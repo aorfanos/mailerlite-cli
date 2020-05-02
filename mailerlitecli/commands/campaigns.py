@@ -3,16 +3,41 @@ import requests
 import re
 import yaml
 import json
+from prettytable import PrettyTable
 
 class Campaign(object):
 
     def __init__(self, mailerlite_api_token):
         self.mailerlite_api_token = mailerlite_api_token
 
-    def status(self):
+    def status(self, status):
+        '''
+        mailerlite-cli campaign status {sent,draft,outbox}
+        '''
         mailerlite_api_token = self.mailerlite_api_token
-        _campaigns_status_all = requests.get('https://api.mailerlite.com/api/v2/campaigns', headers={'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}).json()
-        print(_campaigns_status_all)
+        response_table = PrettyTable()
+        response_table.field_names = ['ID', 'Name', 'Type', 'Status', 'Total Recipients', 'Opened %', 'Clicked %', 'Creation Date', 'Send Date']
+
+        _campaigns_status_all = requests.get('https://api.mailerlite.com/api/v2/campaigns/'+str(status), headers={'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}).json()
+        
+        for _campaign in _campaigns_status_all:
+            _id = _campaign['id']
+            _name = _campaign['name']
+            _type = _campaign['type']
+            _status = _campaign['status']
+            _recipients = _campaign['total_recipients']
+            _opened = _campaign['opened']['rate']
+            _clicked = _campaign['clicked']['rate']
+            _date_created = _campaign['date_created']
+            _date_send = _campaign['date_send']
+
+            response_table.add_row(['{}'.format(_id), '{}'.format(_name), '{}'.format(_type),
+                '{}'.format(_status), '{}'.format(_recipients), '{}'.format(_opened),
+                '{}'.format(_clicked), '{}'.format(_date_created), '{}'.format(_date_send)])
+            
+        print(response_table)
+
+        #print(_campaigns_status_all.content)
 
     def create(self, campaign_type, config_file=""):
         mailerlite_api_token = self.mailerlite_api_token
@@ -36,18 +61,16 @@ class Campaign(object):
             _winner_after_type = _config['winner_after_type']
 
             _data = {
-                    'data': {
-                       'type': 'ab',
-                       'groups': '{}'.format(_groups),
-                       'ab_settings': {
-                           'send_type': '{}'.format(_send_type),
-                           'values': '{}'.format(_values),
-                           'ab_win_type': '{}'.format(_ab_win_type),
-                           'winner_after': '{}'.format(_winner_after),
-                           'winner_after_type': '{}'.format(_winner_after_type),
-                           'split_part': '{}'.format(_split_part),
+                  'type': 'ab',
+                  'groups': '{}'.format(_groups),
+                  'ab_settings': {
+                      'send_type': '{}'.format(_send_type),
+                      'values': '{}'.format(_values),
+                      'ab_win_type': '{}'.format(_ab_win_type),
+                      'winner_after': '{}'.format(_winner_after),
+                      'winner_after_type': '{}'.format(_winner_after_type),
+                      'split_part': '{}'.format(_split_part),
                    },
-                   }
                }
         elif _type == "regular":
             _groups = _config['groups']
@@ -61,7 +84,8 @@ class Campaign(object):
         else:
             raise ValueError("Unaccepted campaign type")
 
+        #print(_data)
         
-        _campaign_create = requests.post('https://api.mailerlite.com/api/v2/campaigns', headers=headers, json=json.dumps(_data))
+        _campaign_create = requests.post('https://api.mailerlite.com/api/v2/campaigns', headers=headers, json=_data)
 
         print("{0}\n{1}".format(_campaign_create.status_code, _campaign_create.content))
