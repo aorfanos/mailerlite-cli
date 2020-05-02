@@ -3,6 +3,7 @@ import json
 import yaml
 from mailerlitecli.utils.configfiles import importYAML
 from mailerlitecli.utils.utils import args_parse
+from mailerlitecli.commands.groups import getGroupIDByName
 from prettytable import PrettyTable
 
 class Subscriber(object):
@@ -19,31 +20,51 @@ class Subscriber(object):
                 'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token),
                 }
         
-    def list(self):
+    def list(self, group=""):
         mailerlite_api_token = self.mailerlite_api_token
         response_table = self.response_table
         response_table.field_names = ['ID','E-mail','Type','Sent','Opened','Clicked','Subscribe Date', 'Created']
-        _subscriber_list = requests.get('https://api.mailerlite.com/api/v2/subscribers', headers=self.get_headers).json()
 
-        for _subscriber in _subscriber_list:
-            _id = _subscriber['id']
-            _email = _subscriber['email']
-            _type = _subscriber['type']
-            _sent = _subscriber['sent']
-            _opened = _subscriber['opened']
-            _clicked = _subscriber['clicked']
-            _subscribe_data = _subscriber['date_subscribe']
-            _created = _subscriber['date_created']
+        if group == "":
+            _subscriber_list = requests.get('https://api.mailerlite.com/api/v2/subscribers', headers=self.get_headers).json()
 
-            table_row = ['{}'.format(_id),'{}'.format(_email),'{}'.format(_type),
-                    '{}'.format(_sent),'{}'.format(_opened),'{}'.format(_clicked),
-                    '{}'.format(_subscribe_data),'{}'.format(_created)]
+            for _subscriber in _subscriber_list:
+                _id = _subscriber['id']
+                _email = _subscriber['email']
+                _type = _subscriber['type']
+                _sent = _subscriber['sent']
+                _opened = _subscriber['opened']
+                _clicked = _subscriber['clicked']
+                _subscribe_data = _subscriber['date_subscribe']
+                _created = _subscriber['date_created']
+
+                table_row = ['{}'.format(_id),'{}'.format(_email),'{}'.format(_type),
+                        '{}'.format(_sent),'{}'.format(_opened),'{}'.format(_clicked),
+                        '{}'.format(_subscribe_data),'{}'.format(_created)]
             
-            response_table.add_row(table_row)
+                response_table.add_row(table_row)
+        else:
+            _group = str(getGroupIDByName(mailerlite_api_token, group))
+            _subscriber_list = requests.get('https://api.mailerlite.com/api/v2/groups/'+_group+'/subscribers', headers=self.get_headers).json()
 
+            for _subscriber in _subscriber_list:
+                _id = _subscriber['id']
+                _email = _subscriber['email']
+                _type = _subscriber['type']
+                _sent = _subscriber['sent']
+                _opened = _subscriber['opened']
+                _clicked = _subscriber['clicked']
+                _subscribe_data = _subscriber['date_subscribe']
+                _created = _subscriber['date_created']
+
+                table_row = ['{}'.format(_id),'{}'.format(_email),'{}'.format(_type),
+                        '{}'.format(_sent),'{}'.format(_opened),'{}'.format(_clicked),
+                        '{}'.format(_subscribe_data),'{}'.format(_created)]
+            
+                response_table.add_row(table_row)
         print(response_table)
 
-    def add(self, email, name="", config_file=""):
+    def add(self, email, name="", group="", config_file=""):
         mailerlite_api_token = self.mailerlite_api_token
         response_table = self.response_table
         headers = self.post_headers
@@ -53,7 +74,10 @@ class Subscriber(object):
                     'email': '{}'.format(email),
                     'name': '{}'.format(name),
                     }
-            _subscriber_add = requests.post('https://api.mailerlite.com/api/v2/subscribers', headers=headers, json=_data)
+            if group != "":
+                _subscriber_add = requests.post('https://api.mailerlite.com/api/v2/groups/'+str(getGroupIDByName(mailerlite_api_token, group))+'/subscribers', headers=headers, json=_data)
+            else:
+                _subscriber_add = requests.post('https://api.mailerlite.com/api/v2/subscribers', headers=headers, json=_data)
         else:
             _config_file = importYAML(config_file)
             _subscriber_add = requests.post('https://api.mailerlite.com/api/v2/subscribers', headers=headers, json=_config_file)
@@ -61,7 +85,15 @@ class Subscriber(object):
         print("{}\n{}".format(_subscriber_add.status_code, _subscriber_add.content))
 
     def search(self, query=""):
-        pass
+        mailerlite_api_token = self.mailerlite_api_token
+        headers = self.post_headers
+
+        #_query = requests.get('https://api.mailerlite.com/api/v2/subscribers/search?query='+str(query), headers=headers)
+
+        try:
+            self.show(query)
+        except KeyError as e:
+            print("Record not found: {}".format(query))
 
     def update(self, identifier, *options): #identifier == subscriber ID or e-mail
         mailerlite_api_token = self.mailerlite_api_token
@@ -78,7 +110,7 @@ class Subscriber(object):
         response_table = self.response_table
         response_table.field_names = self.response_table.default_field_names
         _subscriber_info = requests.get('https://mailerlite.com/api/v2/subscribers/'+str(identifier), headers=headers).json()
-
+        
         _id = _subscriber_info['id']
         _email = _subscriber_info['email']
 
@@ -96,3 +128,13 @@ class Subscriber(object):
                response_table.add_row(['{}'.format(_key),'{}'.format(_value)])
 
         print(response_table)
+
+    def group(self, action, group_id, subscriber_email):
+        '''
+        {add|remove} GROUP_ID SUBSCRIBER_EMAIL
+        '''
+        mailerlite_api_token = self.mailerlite_api_token
+        headers = self.post_headers
+
+        if action == "add":
+            pass
