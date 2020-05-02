@@ -17,15 +17,10 @@ class Account(object):
             _account_stats = requests.get("https://api.mailerlite.com/api/v2/stats", 
                     headers={'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)},
                         json={'timestamp': '{}'.format(timestamp)}).json()
-        
-        response_table.add_row(['Open Rate', _account_stats['open_rate']])
-        response_table.add_row(['Subscribed', _account_stats['subscribed']])
-        response_table.add_row(['Click Rate', _account_stats['click_rate']])
-        response_table.add_row(['Campaigns', _account_stats['campaigns']])
-        response_table.add_row(['Unsubscribed', _account_stats['unsubscribed']])
-        response_table.add_row(['Bounce Rate', _account_stats['bounce_rate']])
-        response_table.add_row(['Sent E-mails', _account_stats['sent_emails']])
 
+        for _stat in _account_stats:
+            response_table.add_row([_stat,_account_stats[_stat]])
+        
         print(response_table)
 
     def info(self):
