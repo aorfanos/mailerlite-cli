@@ -1,4 +1,5 @@
 import requests, os
+from mailerlitecli.utils.utils import args_parse
 from prettytable import PrettyTable
 
 def getGroupNameByID(mailerlite_api_token, group_id):
@@ -23,6 +24,9 @@ class Group(object):
 
     def __init__(self, mailerlite_api_token):
         self.mailerlite_api_token = mailerlite_api_token
+        self.get_headers = {'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}
+        self.post_headers = {'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token),
+                'Content-Type': 'application/json'}
 
     def add(self, group_name="New Group by mailerlite-cli"):
         mailerlite_api_token = self.mailerlite_api_token
@@ -80,19 +84,19 @@ class Group(object):
 
         return(response_table)
 
-    def update(self, group_name, key="", value=""):
+    def update(self, group_name, *options):
+        '''
+        Update group fields, accepts:
+        pos. parameter: group_name
+        options: key:value pair
+        '''
         mailerlite_api_token = self.mailerlite_api_token
-        headers = { 
-                'Content-Type': 'application/json',
-                'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token),
-                }
+        headers = self.post_headers
+        _data = (args_parse(options))
+        _group_id = str(getGroupIDByName(mailerlite_api_token, group_name))
+        _update_group_parameter = requests.put("https://api.mailerlite.com/api/v2/groups/"+_group_id, headers=headers, json=_data)
 
-        param = {'{}'.format(key): '{}'.format(value)}
-
-        group_id = str(getGroupIDByName(mailerlite_api_token, group_name))
-        _update_group_parameter = requests.put("https://api.mailerlite.com/api/v2/groups/"+group_id, headers=headers, json=param)
-        return("[{0}] Updated group ID {1} with key/value {2}/{3}".format(_update_group_parameter.status_code, 
-            group_id, key, value  ))
+        print(_update_group_parameter.status_code)
 
     def delete(self, group_name):
         mailerlite_api_token = self.mailerlite_api_token
