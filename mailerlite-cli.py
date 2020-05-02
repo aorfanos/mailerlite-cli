@@ -23,4 +23,4 @@ class Pipeline(object):
         self.subscriber = subscribers.Subscriber(mailerlite_api_token)
 
 if __name__ == "__main__":
-    fire.Fire(Pipeline(mailerlite_api_token))
+    fire.Fire(Pipeline)
