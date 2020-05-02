@@ -1,0 +1,10 @@
+---
+name: "Dwight Schrute"
+email: "dwight@dundermifflin.org"
+fields:
+        - company: "Dunder Mifflin"
+        - city: "Scranton"
+        - email: "dwight@dundermifflin.org"
+        - name: "Dwight"
+        - last_name: "Schrute"
+        - country: "USA" 

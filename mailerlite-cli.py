@@ -5,6 +5,7 @@ import mailerlitecli.commands.campaigns as campaigns
 import mailerlitecli.commands.groups as groups
 import mailerlitecli.commands.accounts as accounts
 import mailerlitecli.commands.subscribers as subscribers
+import mailerlitecli.utils.configfiles
 import os
 import fire
 
@@ -22,4 +23,4 @@ class Pipeline(object):
         self.subscriber = subscribers.Subscriber(mailerlite_api_token)
 
 if __name__ == "__main__":
-    fire.Fire(Pipeline)
+    fire.Fire(Pipeline(mailerlite_api_token))

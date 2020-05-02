@@ -86,9 +86,7 @@ class Group(object):
 
     def update(self, group_name, *options):
         '''
-        Update group fields, accepts:
-        pos. parameter: group_name
-        options: key:value pair
+        mailerlite-cli group update GROUP_NAME KEY:VALUE
         '''
         mailerlite_api_token = self.mailerlite_api_token
         headers = self.post_headers

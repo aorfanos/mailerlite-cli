@@ -10,7 +10,7 @@ class Subscriber(object):
     def __init__(self, mailerlite_api_token):
         self.mailerlite_api_token = mailerlite_api_token
         self.response_table = PrettyTable()
-        self.response_table.field_names = ['Key', 'Value']
+        self.response_table.default_field_names = ['Key', 'Value']
         self.post_headers = {
                 'Content-Type': 'application/json',
                 'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token),
@@ -76,7 +76,7 @@ class Subscriber(object):
         mailerlite_api_token = self.mailerlite_api_token
         headers = self.get_headers
         response_table = self.response_table
-        
+        response_table.field_names = self.response_table.default_field_names
         _subscriber_info = requests.get('https://mailerlite.com/api/v2/subscribers/'+str(identifier), headers=headers).json()
 
         _id = _subscriber_info['id']
