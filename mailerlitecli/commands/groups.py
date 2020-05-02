@@ -4,7 +4,6 @@ from prettytable import PrettyTable
 def getGroupNameByID(mailerlite_api_token, group_id):
     _group_list = requests.get("https://api.mailerlite.com/api/v2/groups", headers={'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}).json()
     for _group in _group_list:
-        print("Checking: {0} vs {1}".format(_group['id'], group_id))
         if _group['id'] == group_id:
             _group_name = _group['name']
             return("{1}".format(_group_name))
@@ -14,7 +13,6 @@ def getGroupNameByID(mailerlite_api_token, group_id):
 def getGroupIDByName(mailerlite_api_token, group_name):
     _group_list = requests.get("https://api.mailerlite.com/api/v2/groups", headers={'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}).json()
     for _group in _group_list:
-        print("Check: {0} vs {1}".format(group_name, _group['name']))
         if _group['name'] == group_name:
             _group_id = _group['id']
             return("{}".format(_group_id))
@@ -26,7 +24,7 @@ class Group(object):
     def __init__(self, mailerlite_api_token):
         self.mailerlite_api_token = mailerlite_api_token
 
-    def create(self, group_name="New Group by mailerlite-cli"):
+    def add(self, group_name="New Group by mailerlite-cli"):
         mailerlite_api_token = self.mailerlite_api_token
         headers = {
                 'Content-Type': 'application/json',
@@ -82,47 +80,37 @@ class Group(object):
 
         return(response_table)
 
-    def update(self, group_name="", group_id="", parameter_key="", parameter_value=""):
+    def update(self, group_name, key="", value=""):
         mailerlite_api_token = self.mailerlite_api_token
         headers = { 
                 'Content-Type': 'application/json',
                 'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token),
                 }
 
-        param = {'{}'.format(parameter_key): '{}'.format(parameter_value)}
+        param = {'{}'.format(key): '{}'.format(value)}
 
-        if group_id == "":
-            group_id = str(getGroupIDByName(mailerlite_api_token, group_name))
-            _update_group_parameter = requests.put("https://api.mailerlite.com/api/v2/groups/"+group_id, headers=headers, json=param)
-        else:
-            _update_group_parameter = requests.put("https://api.mailerlite.com/api/v2/groups/"+str(group_id), headers=headers, json=param)
-
+        group_id = str(getGroupIDByName(mailerlite_api_token, group_name))
+        _update_group_parameter = requests.put("https://api.mailerlite.com/api/v2/groups/"+group_id, headers=headers, json=param)
         return("[{0}] Updated group ID {1} with key/value {2}/{3}".format(_update_group_parameter.status_code, 
-            group_id, parameter_key, parameter_value  ))
+            group_id, key, value  ))
 
-    def delete(self, group_id="", group_name=""):
+    def delete(self, group_name):
         mailerlite_api_token = self.mailerlite_api_token
         headers = {
                 'Content-Type': 'application/json',
                 'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token),
                 }
-        if group_id == "":
-            group_id = str(getGroupIDByName(mailerlite_api_token, group_name))
-            _delete_group = requests.delete("https://api.mailerlite.com/api/v2/groups/"+group_id, headers=headers)
-        elif group_id != "":
-            _delete_group = requests.delete("https://api.mailerlite.com/api/v2/groups/"+str(group_id), headers=headers)
+        group_id = str(getGroupIDByName(mailerlite_api_token, group_name))
+        _delete_group = requests.delete("https://api.mailerlite.com/api/v2/groups/"+group_id, headers=headers)
 
         print("Deleted group {0} with ID {1}".format(group_name, group_id))
 
-    def show(self, group_id="", group_name=""):
+    def show(self, group_name):
         mailerlite_api_token = self.mailerlite_api_token
         response_table = PrettyTable()
         response_table.field_names = ['Key', 'Value']
-        if group_id == "":
-            group_id = str(getGroupIDByName(mailerlite_api_token, group_name))
-            _show_group_info = requests.get("https://api.mailerlite.com/api/v2/groups/"+group_id, headers={'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}).json()
-        elif group_id != "":
-            _show_group_info = requests.get("https://api.mailerlite.com/api/v2/groups/"+str(group_id), headers={'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}).json()
+        group_id = str(getGroupIDByName(mailerlite_api_token, group_name))
+        _show_group_info = requests.get("https://api.mailerlite.com/api/v2/groups/"+group_id, headers={'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}).json()
 
         response_table.add_row(['Name', '{}'.format(_show_group_info['name'])])
         response_table.add_row(['ID', '{}'.format(_show_group_info['id'])])
