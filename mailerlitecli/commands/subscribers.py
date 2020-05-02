@@ -27,41 +27,26 @@ class Subscriber(object):
 
         if group == "":
             _subscriber_list = requests.get('https://api.mailerlite.com/api/v2/subscribers', headers=self.get_headers).json()
-
-            for _subscriber in _subscriber_list:
-                _id = _subscriber['id']
-                _email = _subscriber['email']
-                _type = _subscriber['type']
-                _sent = _subscriber['sent']
-                _opened = _subscriber['opened']
-                _clicked = _subscriber['clicked']
-                _subscribe_data = _subscriber['date_subscribe']
-                _created = _subscriber['date_created']
-
-                table_row = ['{}'.format(_id),'{}'.format(_email),'{}'.format(_type),
-                        '{}'.format(_sent),'{}'.format(_opened),'{}'.format(_clicked),
-                        '{}'.format(_subscribe_data),'{}'.format(_created)]
-            
-                response_table.add_row(table_row)
         else:
             _group = str(getGroupIDByName(mailerlite_api_token, group))
             _subscriber_list = requests.get('https://api.mailerlite.com/api/v2/groups/'+_group+'/subscribers', headers=self.get_headers).json()
 
-            for _subscriber in _subscriber_list:
-                _id = _subscriber['id']
-                _email = _subscriber['email']
-                _type = _subscriber['type']
-                _sent = _subscriber['sent']
-                _opened = _subscriber['opened']
-                _clicked = _subscriber['clicked']
-                _subscribe_data = _subscriber['date_subscribe']
-                _created = _subscriber['date_created']
+        for _subscriber in _subscriber_list:
+           _id = _subscriber['id']
+           _email = _subscriber['email']
+           _type = _subscriber['type']
+           _sent = _subscriber['sent']
+           _opened = _subscriber['opened']
+           _clicked = _subscriber['clicked']
+           _subscribe_data = _subscriber['date_subscribe']
+           _created = _subscriber['date_created']
 
-                table_row = ['{}'.format(_id),'{}'.format(_email),'{}'.format(_type),
-                        '{}'.format(_sent),'{}'.format(_opened),'{}'.format(_clicked),
-                        '{}'.format(_subscribe_data),'{}'.format(_created)]
-            
-                response_table.add_row(table_row)
+           table_row = ['{}'.format(_id),'{}'.format(_email),'{}'.format(_type),
+                   '{}'.format(_sent),'{}'.format(_opened),'{}'.format(_clicked),
+                   '{}'.format(_subscribe_data),'{}'.format(_created)]
+       
+           response_table.add_row(table_row)
+        
         print(response_table)
 
     def add(self, email, name="", group="", config_file=""):
