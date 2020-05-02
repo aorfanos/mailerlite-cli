@@ -85,6 +85,13 @@ class Subscriber(object):
         headers = self.post_headers
         
         _data = args_parse(options)
+        _data['fields'] = {}
+        for _field_name in _data:
+            if _field_name in ['last_name','city','country',
+                    'company', 'zip', 'phone', 'state']:
+                _data['fields'][_field_name] = _data[_field_name] 
+        _data.update(_data)
+        
         _update_subscriber_info = requests.put('https://mailerlite.com/api/v2/subscribers/'+str(identifier), headers=headers, json=_data)
 
         print(_update_subscriber_info.status_code)
