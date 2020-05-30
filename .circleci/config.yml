@@ -11,5 +11,5 @@ jobs:
                         - python/install-deps requirements.txt
                         - run:
                                 command: |
-                                        mailerlite-cli.py account info
+                                        python mailerlite-cli.py account info
                                 name: Test API conn
