@@ -1,0 +1,26 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
+jobs:
+  build:
+    docker:
+      image: python:3
+    environment: 
+      MAILERLITE_API_TOKEN:8101e7de6061203bba9f29db80bc1759
+  test:
+    - run:
+        command: ./mailerlite-cli.py account info
+        name: Test display account info
+  steps:
+    - checkout
+    - python/load-cache
+    - python/install-deps
+    - python/save-cache
+
+workflows:
+  main:
+    jobs:
+      - build
+      - test
