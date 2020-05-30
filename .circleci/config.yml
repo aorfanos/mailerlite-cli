@@ -6,10 +6,10 @@ orbs:
 jobs:
         build:
                 executor: python/default
-                steps:
-                        - checkout
-                        - python/install-deps requirements.txt
-                        - run:
-                                command: |
-                                        python mailerlite-cli.py account info
-                                name: Test API conn
+        steps:
+                - checkout
+                - python/install-deps requirements.txt
+                - run:
+                        command: |
+                                 python mailerlite-cli.py account info
+                        name: Test API conn
