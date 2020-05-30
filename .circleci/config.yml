@@ -6,18 +6,17 @@ orbs:
 jobs:
   build:
     docker:
-      image: python:3
-    environment: 
-      MAILERLITE_API_TOKEN:8101e7de6061203bba9f29db80bc1759
+      - image: 'circleci/python:latest'
+    steps:
+      - checkout
+      - run: |
+      pip install requirements.txt
   test:
-    - run:
-        command: ./mailerlite-cli.py account info
-        name: Test display account info
-  steps:
-    - checkout
-    - python/load-cache
-    - python/install-deps
-    - python/save-cache
+    steps:
+      - checkout
+      - run:
+          command: ./mailerlite-cli.py account info
+          name: Test display account info
 
 workflows:
   main:
