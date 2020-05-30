@@ -2,13 +2,18 @@ version: 2.1
 
 orbs:
         python: circleci/python@0.3.0
+version: 2.1
+workflows:
+        main:
+                jobs:
+                        - build
 
 jobs:
         build:
                 executor: python/default
         steps:
                 - checkout
-                - python/install-deps requirements.txt
+                - python/install-deps
                 - run:
                         command: |
                                  python mailerlite-cli.py account info
