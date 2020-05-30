@@ -1,14 +1,34 @@
 import mailerlitecli.commands.groups as groups 
+from mailerlitecli.utils.utils import args_parse
 import requests
 import re
 import yaml
 import json
 from prettytable import PrettyTable
 
+def getCampaignIDByName(campaign_name):
+    pass
+
 class Campaign(object):
 
     def __init__(self, mailerlite_api_token):
         self.mailerlite_api_token = mailerlite_api_token
+        self.post_headers = {'Content-Type': 'application-json', 'X-MailerLite-ApiKey': '{}'.format(mailerlite_api_token)}
+
+    def import_content(self, campaign_id ,html_file, plain_text_file="{$unsubscribe}\n{$url}"):
+        mailerlite_api_token = self.mailerlite_api_token
+        headers = self.post_headers
+
+        _html = open(html_file, "r").read()
+        
+        _content_data = {
+                'html': '{}'.format(_html),
+                'plain': '{}'.format(plain_text_file)
+                }
+
+        _import_content = requests.put('https://api.mailerlite.com/api/v2/campaigns/'+str(campaign_id)+'/content', headers=headers, json=_content_data)
+
+        print(_import_content.content)
 
     def status(self, status):
         '''
@@ -83,9 +103,28 @@ class Campaign(object):
                     }
         else:
             raise ValueError("Unaccepted campaign type")
-
-        #print(_data)
         
         _campaign_create = requests.post('https://api.mailerlite.com/api/v2/campaigns', headers=headers, json=_data)
 
         print("{0}\n{1}".format(_campaign_create.status_code, _campaign_create.content))
+
+    def send(self, campaign_id,schedule=0, *extra_fields):
+        '''
+        Send and schedule campaigns, has options for managing
+        followups and analytics.
+        '''
+        mailerlite_api_token = self.mailerlite_api_token
+        headers = self.post_headers
+
+        _data_dict = args_parse(extra_fields)
+
+        if schedule in [1, 'enable', 'yes', 'on']:
+            _data_dict['type'] = 2
+            _campaign_send = requests.post('https://api.mailerlite.com/api/v2/campaigns/'+str(campaign_id)+'/actions/send',
+                    headers = headers, json=_data_dict)
+        else:
+            _campaign_send = requests.post('https://api.mailerlite.com/api/v2/campaigns/'+str(campaign_id)+'/actions/send',
+                    headers = headers)
+
+        print(_campaign_send.content)
+
