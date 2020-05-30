@@ -1,18 +1,17 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@0.3.0
+        python: circleci/python@0.3.0
 
 jobs:
-  build-and-test:
-    docker: 'circleci/python:latest'
-    steps:
-      - checkout
-      - run:
-          command: ./mailerlite-cli.py account info
-          name: Test call to mailerlite api
-
-workflows:
-  main:
-    jobs:
-      - build-and-test
+        build:
+                executor: python/default
+                steps:
+                        - checkout
+                        - python/load-cache
+                        - python/install-deps
+                        - python/save-cache
+                        - run:
+                                command: |
+                                        mailerlite-cli.py account info
+                                name: Test API conn
