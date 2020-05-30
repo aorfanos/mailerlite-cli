@@ -8,9 +8,7 @@ jobs:
                 executor: python/default
                 steps:
                         - checkout
-                        - python/load-cache
-                        - python/install-deps
-                        - python/save-cache
+                        - python/install-deps requirements.txt
                         - run:
                                 command: |
                                         mailerlite-cli.py account info
