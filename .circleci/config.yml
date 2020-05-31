@@ -1,25 +1,16 @@
 version: 2.1
-
-orbs:
-  python: circleci/python@0.2.1
-
 jobs:
-  build:
-    docker:
-      - image: 'circleci/python:latest'
-    steps:
-      - checkout
-      - run: |
-      pip install requirements.txt
-  test:
-    steps:
-      - checkout
-      - run:
-          command: ./mailerlite-cli.py account info
-          name: Test display account info
-
-workflows:
-  main:
-    jobs:
-      - build
-      - test
+        build:
+                docker:
+                        - image: circleci/python:jessie
+                steps:
+                        - checkout
+                        - run:
+                                name: Install requirements
+                                command: |
+                                        pip install --upgrade pip --user
+                                        pip install -r requirements.txt
+                        - run:
+                                name: Make test call to API
+                                command: |
+                                        python mailerlite-cli.py account info
