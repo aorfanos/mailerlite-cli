@@ -129,7 +129,7 @@ class Group(object):
 
         print(response_table)
 
-class subscriber(Group):
+class Subscriber(Group):
 
     def insert(self, subscriber_list, filetype="csv"):
         if filetype == 'csv':
