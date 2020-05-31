@@ -10,7 +10,10 @@ jobs:
                                         pip install --upgrade pip --user
                                         pip install -r requirements.txt
         test:
+                docker:
+                        - image: circleci/python:jessie
                 steps:
+                        - checkout
                         - run:
                                 name: Make test call to API
                                 command: |
