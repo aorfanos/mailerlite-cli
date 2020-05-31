@@ -1,4 +1,3 @@
-version: 2.1
 jobs:
         build:
                 docker:
@@ -18,3 +17,10 @@ jobs:
                                 name: Make test call to API
                                 command: |
                                         python mailerlite-cli.py account info
+
+workflows:
+        version: 2.1
+        build_and_test:
+                jobs:
+                        - build
+                        - test
