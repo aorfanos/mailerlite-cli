@@ -131,7 +131,7 @@ class Group(object):
 
 class Subscriber(Group):
 
-    def insert(self, subscriber_list, filetype="csv"):
+    def insert(self, group_name, subscriber_list, filetype="csv"):
         if filetype == 'csv':
             print("{} handled as CSV file")
 

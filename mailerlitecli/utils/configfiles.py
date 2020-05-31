@@ -1,4 +1,4 @@
-import yaml
+import yaml, c
 
 def importYAML(yaml_file):
     _config_file = open(yaml_file, "r")
