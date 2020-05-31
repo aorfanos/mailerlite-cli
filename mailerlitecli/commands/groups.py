@@ -129,3 +129,38 @@ class Group(object):
 
         print(response_table)
 
+class subscriber(Group):
+
+    def insert(self, subscriber_list, filetype="csv"):
+        if filetype == 'csv':
+            print("{} handled as CSV file")
+
+    def list(self, group_name):
+        mailerlite_api_token = self.mailerlite_api_token
+        headers = self.get_headers
+        _group_id = str(getGroupIDByName(mailerlite_api_token, group_name))
+        response_table = PrettyTable()
+
+        table_field_names = []
+        table_field_values = []
+
+        _group_subscriber_list = requests.get("https://api.mailerlite.com/api/v2/groups/{}/subscribers".format(_group_id), headers=headers).json()
+
+        # append column names
+        for _subscriber in _group_subscriber_list:
+            break
+        for _field in _subscriber:
+            if _field != 'fields':
+                table_field_names.append(_field)
+
+        # append subscriber data
+        for _subscriber in _group_subscriber_list:
+            del table_field_values[:]
+            for _field in _subscriber:
+                if _field != 'fields':
+                    table_field_values.append(_subscriber[_field])
+            response_table.add_row(table_field_values)
+            #print(table_field_values)
+
+        response_table.field_names = table_field_names
+        print(response_table)

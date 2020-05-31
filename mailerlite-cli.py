@@ -18,6 +18,7 @@ class Pipeline(object):
 
     def __init__(self):
         self.group = groups.Group(mailerlite_api_token)
+        self.group.subscriber = groups.subscriber(mailerlite_api_token)
         self.campaign = campaigns.Campaign(mailerlite_api_token)
         self.account = accounts.Account(mailerlite_api_token)
         self.subscriber = subscribers.Subscriber(mailerlite_api_token)
