@@ -27,7 +27,7 @@ class Campaign(object):
                 }
 
         _import_content = requests.put('https://api.mailerlite.com/api/v2/campaigns/'+str(campaign_id)+'/content', headers=headers, json=_content_data)
-
+        print(_content_data)
         print(_import_content.content)
 
     def status(self, status):
@@ -97,16 +97,17 @@ class Campaign(object):
             _subject = _config['subject']
 
             _data = {
-                    'subject': '{}'.format(_subject),
-                    'groups': '{}'.format(_groups),
                     'type': 'regular',
+                    'subject': '{}'.format(_subject),
+                    'groups': '{}'.format(_groups)
                     }
         else:
-            raise ValueError("Unaccepted campaign type")
+            raise ValueError("Campaign type not supported")
         
-        _campaign_create = requests.post('https://api.mailerlite.com/api/v2/campaigns', headers=headers, json=_data)
+        _json_data = json.dumps(_data)
+        _campaign_create = requests.post('https://api.mailerlite.com/api/v2/campaigns', headers=headers, json=_json_data)
 
-        print("{0}\n{1}".format(_campaign_create.status_code, _campaign_create.content))
+        print("{0}\n{1}\n{2}".format(_campaign_create.status_code, _campaign_create.content, _json_data))
 
     def send(self, campaign_id,schedule=0, *extra_fields):
         '''
