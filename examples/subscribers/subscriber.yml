@@ -3,7 +3,7 @@ name: "Dwight Schrute"
 email: "dwight@dundermifflin.org"
 fields:
         - company: "Dunder Mifflin"
-        - city: "Scranton"
+        - city: "Scranton, PA"
         - email: "dwight@dundermifflin.org"
         - name: "Dwight"
         - last_name: "Schrute"
